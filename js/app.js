@@ -10,9 +10,17 @@ let articulosCarrito = [];
 
 // En una sola función se agregan todos los listeners
 generarEventListeners();
+
 function generarEventListeners() {
   // Clic a botón "Agregar al Carrito"
   listaCursos.addEventListener("click", agregarCurso);
+
+  // mostrar el carrito de localStorage al cargarse el dom
+  document.addEventListener("DOMContentLoaded", () => {
+    articulosCarrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    carritoHTML();
+  });
 
   // Eliminar artículos del carrito
   carrito.addEventListener("click", eliminarCurso);
@@ -26,11 +34,11 @@ function generarEventListeners() {
 
 // FUNCIONES
 
-// Se crea un función para cada listener
+// Se crea una función para cada listener
 function agregarCurso(e) {
   e.preventDefault(); //Evita la acción por default, que en el caso de los enlaces es ir al href
   if (e.target.classList.contains("agregar-carrito")) {
-    // Se indica que el target del evento tenga la clase "agregar-carrito" para que solamente se dispare con el clic en el botón y no en toda la sección "lista-cursos"
+    // Se verifica que el target del evento tenga la clase "agregar-carrito" para que solamente se dispare con el clic en el botón y no en toda la sección "lista-cursos"
     const cursoSeleccionado = e.target.parentElement.parentElement;
     // console.log(e.target.parentElement.parentElement);
     leerDatosCurso(cursoSeleccionado);
@@ -66,8 +74,6 @@ function leerDatosCurso(curso) {
     articulosCarrito = [...articulosCarrito, infoCurso];
   }
 
-  console.log(articulosCarrito);
-
   carritoHTML();
 }
 
@@ -101,6 +107,14 @@ function carritoHTML() {
     // Agregar el html de los artículos al <tbody> del carrito
     contenedorCarrito.appendChild(row);
   });
+
+  // actualizar el carrito en el localStorage
+  sincronizarStorage();
+}
+
+// agregar el carrito al localStorage
+function sincronizarStorage() {
+  localStorage.setItem("carrito", JSON.stringify(articulosCarrito));
 }
 
 // Eliminar los cursos duplicados del <tbody>
